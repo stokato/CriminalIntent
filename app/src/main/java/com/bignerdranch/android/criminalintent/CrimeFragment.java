@@ -1,7 +1,10 @@
 package com.bignerdranch.android.criminalintent;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -13,6 +16,7 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 import java.util.UUID;
@@ -24,11 +28,16 @@ import java.util.UUID;
 public class CrimeFragment extends Fragment {
 
     private static final String ARG_CRIME_ID = "crime_id";
+    private static final String DIALOG_DATE = "DialogDate";
+    private static final String DIALOG_TIME = "DialogTime";
+    private static final int REQUEST_DATE = 0;
+    private static final int REQUEST_TIME = 1;
 
     private Crime mCrime;
 
     private EditText mTitleField;
-    private Button mDateButtons;
+    private Button mDateButton;
+    private Button mTimeButton;
     private CheckBox mSolvedCheckBox;
 
     @Override
@@ -50,6 +59,14 @@ public class CrimeFragment extends Fragment {
 
 //            return DateFormat.getDateInstance(DateFormat.MEDIUM, Locale.ENGLISH).format(date);
         return ds;
+    }
+
+    private String getCrimeTime() {
+        Date date = mCrime.getDate();
+
+        String ts = new SimpleDateFormat("hh:mm a", Locale.ENGLISH).format(date);
+
+        return ts;
     }
 
     @Override
@@ -78,10 +95,37 @@ public class CrimeFragment extends Fragment {
             }
         });
 
-        mDateButtons = (Button)v.findViewById(R.id.crime_date);
-//        mDateButtons.setText(mCrime.getDate().toString());
-        mDateButtons.setText(getCrimeDate());
-        mDateButtons.setEnabled(false);
+        mDateButton = (Button)v.findViewById(R.id.crime_date);
+//        mDateButton.setText(mCrime.getDate().toString());
+        mDateButton.setText(getCrimeDate());
+//        mDateButton.setEnabled(false);
+
+        mDateButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FragmentManager manager = getFragmentManager();
+//                DatePickerFragment dialog = new DatePickerFragment();
+                DatePickerFragment dialog = DatePickerFragment.newInstance(mCrime.getDate());
+
+                // Для связи между фрагментами с целью получения результата
+                dialog.setTargetFragment(CrimeFragment.this, REQUEST_DATE);
+
+                dialog.show(manager, DIALOG_DATE);
+            }
+        });
+
+        mTimeButton = (Button)v.findViewById(R.id.crime_time);
+        mTimeButton.setText(getCrimeTime());
+        mTimeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FragmentManager manager = getFragmentManager();
+                TimePickerFragment dialog = TimePickerFragment.newInstance(mCrime.getDate());
+
+                dialog.setTargetFragment(CrimeFragment.this, REQUEST_TIME);
+                dialog.show(manager, DIALOG_TIME);
+            }
+        });
 
         mSolvedCheckBox = (CheckBox)v.findViewById(R.id.crime_solved);
         mSolvedCheckBox.setChecked(mCrime.isSolved());
@@ -93,6 +137,50 @@ public class CrimeFragment extends Fragment {
         });
 
         return v;
+    }
+
+    // Обработка результаов диалогов
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(resultCode != Activity.RESULT_OK) {
+            return;
+        }
+
+        // Выбор даты
+        if(requestCode == REQUEST_DATE) {
+            Date date = (Date) data.getSerializableExtra(DatePickerFragment.EXTRA_DATE);
+
+            Calendar reqCal = Calendar.getInstance();
+            reqCal.setTime(date);
+
+            Calendar curCal = Calendar.getInstance();
+            curCal.setTime(mCrime.getDate());
+
+            curCal.set(Calendar.YEAR, reqCal.get(Calendar.YEAR));
+            curCal.set(Calendar.MONTH, reqCal.get(Calendar.MONTH));
+            curCal.set(Calendar.DAY_OF_MONTH, reqCal.get(Calendar.DAY_OF_MONTH));
+
+            mCrime.setDate(curCal.getTime());
+            mDateButton.setText(getCrimeDate());
+        }
+
+        if(requestCode == REQUEST_TIME) {
+            Date date = (Date) data.getSerializableExtra(TimePickerFragment.EXTRA_DATE);
+
+            Calendar reqCal = Calendar.getInstance();
+            reqCal.setTime(date);
+
+            Calendar curCal = Calendar.getInstance();
+            curCal.setTime(mCrime.getDate());
+
+            curCal.set(Calendar.HOUR, reqCal.get(Calendar.HOUR));
+            curCal.set(Calendar.MINUTE, reqCal.get(Calendar.MINUTE));
+            curCal.set(Calendar.SECOND, reqCal.get(Calendar.SECOND));
+
+            mCrime.setDate(curCal.getTime());
+
+            mTimeButton.setText(getCrimeTime());
+        }
     }
 
     public static CrimeFragment newInstance(UUID crimeID) {

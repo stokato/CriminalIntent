@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
 /**
@@ -12,7 +13,7 @@ import android.support.v7.widget.Toolbar;
  * Родительский клас для списка преступлений и единичного их отображения
  */
 
-public abstract class SingleFragmentActivity extends FragmentActivity {
+public abstract class SingleFragmentActivity extends AppCompatActivity {
 
     protected abstract Fragment createFragment();
 
@@ -36,7 +37,7 @@ public abstract class SingleFragmentActivity extends FragmentActivity {
             fm.beginTransaction().add(R.id.content_crime, fragment).commit();
         }
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+//        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         // setSupportActionBar(toolbar);
 
     }
