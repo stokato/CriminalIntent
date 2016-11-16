@@ -14,5 +14,23 @@
     tools:context="com.bignerdranch.android.criminalintent.CrimeActivity"
     tools:showIn="@layout/activity_crime">
 
-
 </RelativeLayout>
+
+
+<!--<LinearLayout-->
+<!--android:id="@+id/empty_place_holder"-->
+<!--android:layout_width="match_parent"-->
+<!--android:layout_height="wrap_content"-->
+<!--android:orientation="vertical"-->
+<!--android:gravity="center">-->
+<!--<TextView-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:text="@string/list_empty"-->
+    <!--android:padding="16dp"/>-->
+<!--<Button-->
+    <!--android:id="@+id/new_crime_button"-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:text="@string/new_crime"/>-->
+<!--</LinearLayout>-->

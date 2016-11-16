@@ -16,7 +16,6 @@ import android.widget.CheckBox;
 import android.widget.TextView;
 
 import java.util.List;
-import java.util.UUID;
 
 /**
  * Created by @s.t.o.k.a.t.o on 14.11.2016.
@@ -35,14 +34,14 @@ public class CrimeListFragment extends Fragment{
     private boolean mSubtitleVisible;
 
 
-
+    // Получаем представление
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_crime_list, container, false);
 
         mCrimeRecyclerView = (RecyclerView)v.findViewById(R.id.crime_recycler_view);
 
-        // Менеджер необъодим для работы RecyclerView, отвечает за размещение элементов на экране
+        // Менеджер необходим для работы RecyclerView, отвечает за размещение элементов на экране
         // LinearLayoutManager - строит вертиальный список
         mCrimeRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
@@ -56,6 +55,7 @@ public class CrimeListFragment extends Fragment{
         return v;
     }
 
+    // При возвращении на экран
     @Override
     public void onResume() {
         super.onResume();
@@ -64,6 +64,7 @@ public class CrimeListFragment extends Fragment{
         updateUI();
     }
 
+    // Сохранение при сворачивании
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
         super.onSaveInstanceState(savedInstanceState);
@@ -81,6 +82,7 @@ public class CrimeListFragment extends Fragment{
             mAdapter = new CrimeAdapter(crimes);
             mCrimeRecyclerView.setAdapter(mAdapter);
         } else  {
+            mAdapter.setCrimes(crimes);
             mAdapter.notifyDataSetChanged();
 
             updateSubtitle();
@@ -154,6 +156,8 @@ public class CrimeListFragment extends Fragment{
 
         // Геренируем строку подзаголовка
         String subtitle = getString(R.string.subtitle_format, crimeCount);
+
+        subtitle = getResources().getQuantityString(R.plurals.subtitle_plural, crimeCount, crimeCount);
 
         if(!mSubtitleVisible) {
             subtitle = null;
@@ -236,6 +240,10 @@ public class CrimeListFragment extends Fragment{
         @Override
         public int getItemCount(){
             return mCrimes.size();
+        }
+
+        public void setCrimes(List<Crime> crimes) {
+            mCrimes = crimes;
         }
 
 //        public int getPosById(UUID id) {
